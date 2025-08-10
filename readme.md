@@ -1,87 +1,111 @@
 
+# 📄 Basic Oracle Smart Contract
 
-# 📄 Solidity Smart Contract Project
-
-This repository contains a Solidity-based smart contract project. It is part of my ongoing work in building decentralized applications and experimenting with Ethereum-compatible blockchain development.
+A Solidity-based **price oracle** that allows trusted addresses (oracles) to update asset prices for different symbols, while enabling others to retrieve price data and check if it's stale.
 
 ---
 
 ## 📌 Overview
 
-* Written in **Solidity**.
-* Designed for **EVM-compatible networks** (e.g., Ethereum, Base, Polygon, etc.).
-* Project is **not yet verified** on the blockchain explorer — verification will be added in a future update.
+* **Purpose:** Store and update price feeds for different symbols.
+* **Access Control:**
+
+  * Only the **contract owner** can add or remove oracles.
+  * Only **approved oracles** can update prices.
+* **Price Staleness Check:** Determine if a price is older than a given threshold.
+
+**Deployed & Verified on Base Sepolia:**
+`0x195B17E6fDf9C735d544CC4C837fB57688B2A430`
+🔍 [View Verified Contract on BaseScan](https://sepolia.basescan.org/address/0x195B17E6fDf9C735d544CC4C837fB57688B2A430#code) ✅
 
 ---
 
-## ⚙️ Development Details
+## ⚙️ Features
 
-* **Language:** Solidity `^0.8.x`
-* **Frameworks/Tools:** Remix, Hardhat, or Foundry (depending on the project)
-* **Target Networks:** Ethereum testnets (e.g., Sepolia, Base Sepolia) or mainnet
-
----
-
-## 🚀 Getting Started
-
-### Requirements
-
-* Node.js & npm (if using Hardhat/Foundry)
-* MetaMask or another Web3 wallet
-* Testnet ETH for deployment
-
-### Installation
-
-Clone the repository:
-
-```bash
-git clone <repository-url>
-cd <project-folder>
-```
-
-Install dependencies (if applicable):
-
-```bash
-npm install
-```
+* **Add or Remove Oracles** → Owner-controlled.
+* **Update Prices** → Only authorized oracles.
+* **Retrieve Prices** → Public access with timestamp.
+* **Check Price Age** → Detect stale prices.
 
 ---
 
 ## 🛠 Deployment
 
-You can deploy this contract via:
+### Requirements
 
-* **Remix** (web-based IDE)
-* **Hardhat** (local development environment)
-* **Foundry** (fast testing & deployment)
+* Solidity `^0.8.19`
+* Base Sepolia network
+* ETH balance for deployment gas fees
 
-Example (Hardhat):
+### Example Deployment
 
-```bash
-npx hardhat run scripts/deploy.js --network sepolia
+```solidity
+BasicOracle oracle = new BasicOracle();
 ```
+
+On deployment:
+
+* The deployer becomes the **owner**.
+* The deployer is automatically added as the first oracle.
+
+---
+
+## 📜 Functions
+
+### **addOracle(address \_oracle)**
+
+Adds a new oracle.
+
+* **Access:** Only owner
+* **Emits:** `OracleAdded`
+
+---
+
+### **removeOracle(address \_oracle)**
+
+Removes an oracle.
+
+* **Access:** Only owner
+* **Emits:** `OracleRemoved`
+
+---
+
+### **updatePrice(string \_symbol, uint256 \_price)**
+
+Updates the price for a symbol.
+
+* **Access:** Only oracle
+* **Emits:** `PriceUpdated`
+
+---
+
+### **getPrice(string \_symbol)**
+
+Retrieves the current price and timestamp for a symbol.
+Returns: `(price, timestamp)`
+
+---
+
+### **isPriceStale(string \_symbol, uint256 \_maxAge)**
+
+Checks if a price is older than `_maxAge` seconds.
+Returns: `true` if stale.
 
 ---
 
 ## 🧪 Testing
 
-Run tests locally (if provided):
+To test locally using Hardhat:
 
 ```bash
+npm install
 npx hardhat test
 ```
 
 ---
 
-## 📜 Verification Status
-
-* **Current Status:** ❌ Not Verified
-* The contract will be verified in future updates once final deployment is complete.
-
----
-
 ## 📄 License
 
-MIT License – You are free to use, modify, and distribute this project.
+MIT License – Free to use and modify.
 
 ---
