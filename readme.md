@@ -1,18 +1,18 @@
 
 # 📄 Basic Oracle Smart Contract
 
-A Solidity-based **price oracle** that allows trusted addresses (oracles) to update asset prices for different symbols, while enabling others to retrieve price data and check if it's stale.
+A Solidity-based **on-chain price oracle** that lets **trusted oracle addresses** push price updates for asset symbols, while allowing anyone to fetch the latest price and verify if the data is stale.
 
 ---
 
 ## 📌 Overview
 
-* **Purpose:** Store and update price feeds for different symbols.
+* **Purpose:** Provide a secure, owner-controlled mechanism for storing and updating asset prices.
 * **Access Control:**
 
-  * Only the **contract owner** can add or remove oracles.
-  * Only **approved oracles** can update prices.
-* **Price Staleness Check:** Determine if a price is older than a given threshold.
+  * Only the **owner** can add or remove oracle addresses.
+  * Only **approved oracles** can push price updates.
+* **Price Staleness:** Anyone can check if a price is older than a specified threshold.
 
 **Deployed & Verified on Base Sepolia:**
 `0x195B17E6fDf9C735d544CC4C837fB57688B2A430`
@@ -22,10 +22,19 @@ A Solidity-based **price oracle** that allows trusted addresses (oracles) to upd
 
 ## ⚙️ Features
 
-* **Add or Remove Oracles** → Owner-controlled.
-* **Update Prices** → Only authorized oracles.
-* **Retrieve Prices** → Public access with timestamp.
-* **Check Price Age** → Detect stale prices.
+* **Owner Controls**
+
+  * Add or remove authorized oracle addresses.
+* **Oracle Functions**
+
+  * Push latest price updates for a given symbol.
+* **Public Functions**
+
+  * Retrieve latest price with timestamp.
+  * Check if a price feed is stale (older than a given age).
+* **Event Logging**
+
+  * Emits events for all key actions: oracle management and price updates.
 
 ---
 
@@ -35,18 +44,18 @@ A Solidity-based **price oracle** that allows trusted addresses (oracles) to upd
 
 * Solidity `^0.8.19`
 * Base Sepolia network
-* ETH balance for deployment gas fees
+* ETH for deployment gas
 
-### Example Deployment
+### Example
 
 ```solidity
 BasicOracle oracle = new BasicOracle();
 ```
 
-On deployment:
+**On Deployment:**
 
-* The deployer becomes the **owner**.
-* The deployer is automatically added as the first oracle.
+* The deployer is set as the **owner**.
+* The deployer is automatically approved as the first oracle.
 
 ---
 
@@ -54,53 +63,61 @@ On deployment:
 
 ### **addOracle(address \_oracle)**
 
-Adds a new oracle.
+Adds a new oracle to the approved list.
 
-* **Access:** Only owner
+* **Access:** `onlyOwner`
 * **Emits:** `OracleAdded`
 
 ---
 
 ### **removeOracle(address \_oracle)**
 
-Removes an oracle.
+Removes an oracle from the approved list.
 
-* **Access:** Only owner
+* **Access:** `onlyOwner`
 * **Emits:** `OracleRemoved`
 
 ---
 
 ### **updatePrice(string \_symbol, uint256 \_price)**
 
-Updates the price for a symbol.
+Updates the latest price for a given symbol.
 
-* **Access:** Only oracle
+* **Access:** `onlyOracle`
 * **Emits:** `PriceUpdated`
 
 ---
 
 ### **getPrice(string \_symbol)**
 
-Retrieves the current price and timestamp for a symbol.
-Returns: `(price, timestamp)`
+Fetches the latest price and timestamp for a symbol.
+
+* **Returns:** `(price, timestamp)`
 
 ---
 
 ### **isPriceStale(string \_symbol, uint256 \_maxAge)**
 
-Checks if a price is older than `_maxAge` seconds.
-Returns: `true` if stale.
+Checks if the price feed for a symbol is older than `_maxAge` seconds.
+
+* **Returns:** `true` if stale, `false` if fresh.
 
 ---
 
 ## 🧪 Testing
 
-To test locally using Hardhat:
+Run local tests with Hardhat:
 
 ```bash
 npm install
 npx hardhat test
 ```
+
+Suggested tests:
+
+* Adding/removing oracles.
+* Updating and fetching prices.
+* Staleness detection.
 
 ---
 
